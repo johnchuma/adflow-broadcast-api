@@ -43,18 +43,8 @@ const createMessage = async (req, res) => {
 const getMessages = async (req, res) => {
   try {
     const messages = await Message.findAndCountAll({
-      where: {
-        [Op.or]: [
-          {
-            content: {
-              [Op.like]: `%${req.query.keyword || ""}%`,
-            },
-          },
-        ],
-      },
       limit: req.limit, // Limit the number of results
       offset: req.offset, // Offset for pagination
-      order: [["name", "DESC"]], // Order by createdAt in descending order
     });
 
     return res.status(200).json({
@@ -65,6 +55,7 @@ const getMessages = async (req, res) => {
       limit: req.limit,
     });
   } catch (error) {
+    console.error("Error retrieving messages:", error);
     return res.status(500).json({
       message: "An error occurred while retrieving messages",
       error: error.message,
