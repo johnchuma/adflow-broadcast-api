@@ -6,8 +6,9 @@ const createUser = async (req, res) => {
   try {
     const { email, password } = req.body;
     //encrypt passsowrd
-
+console.log(email,password)
     const encryptedPassword = bcrypt.hashSync(password, 10);
+    console.log(encryptedPassword)
     const user = await User.create({
       email,
       password: encryptedPassword,
@@ -111,6 +112,22 @@ const editUser = async (req, res) => {
     });
   }
 };
+const getLoggedInUser = async (req, res) => {
+  try {
+    const { id } = req.user;
+    let user = await User.findByPk(id);
+
+    return res.status(200).json({
+      message: "User updated successfully",
+      user,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      message: "An error occurred while updating the user",
+      error: error.message,
+    });
+  }
+};
 
 //delete
 const deleteUser = async (req, res) => {
@@ -134,6 +151,7 @@ module.exports = {
   createUser,
   getUsers,
   editUser,
+  getLoggedInUser,
   deleteUser,
   loginUser,
 };
