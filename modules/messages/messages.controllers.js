@@ -46,12 +46,7 @@ const getMessages = async (req, res) => {
       where: {
         [Op.or]: [
           {
-            name: {
-              [Op.like]: `%${req.query.keyword || ""}%`,
-            },
-          },
-          {
-            location: {
+            content: {
               [Op.like]: `%${req.query.keyword || ""}%`,
             },
           },
