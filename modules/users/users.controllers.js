@@ -6,9 +6,9 @@ const createUser = async (req, res) => {
   try {
     const { email, password } = req.body;
     //encrypt passsowrd
-console.log(email,password)
+    console.log(email, password);
     const encryptedPassword = bcrypt.hashSync(password, 10);
-    console.log(encryptedPassword)
+    console.log(encryptedPassword);
     const user = await User.create({
       email,
       password: encryptedPassword,
@@ -43,13 +43,14 @@ const loginUser = async (req, res) => {
         message: "Invalid password",
       });
     }
-    const token = generateJwtTokens(); // Assuming you have a method to generate a token
+    const token = generateJwtTokens(user); // Assuming you have a method to generate a token
     // Generate a token or session here if needed
     return res.status(200).json({
       message: "Login successful",
-      token: token,
+      token: token.ACCESS_TOKEN,
     });
   } catch (error) {
+    console.error("Login error:", error);
     return res.status(500).json({
       message: "An error occurred while logging in",
       error: error.message,
