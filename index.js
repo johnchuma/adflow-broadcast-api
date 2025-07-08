@@ -15,6 +15,6 @@ app.use("/messages", messagesRoutes);
 app.get("/", (req, res) => {
   res.send("Welcome to the Adflow Broadcast API");
 });
-app.listen(5000, () => {
-  console.log("Server is running on port 5000");
+app.listen(4005, () => {
+  console.log("Server is running on port 4005");
 });
