@@ -59,6 +59,7 @@ const getContacts = async (req, res) => {
           },
         ],
       },
+      orderBy: [["createdAt", "DESC"]], // Order by createdAt in descending order
       limit: req.limit, // Limit the number of results
       offset: req.offset, // Offset for pagination
       order: [["name", "DESC"]], // Order by createdAt in descending order
