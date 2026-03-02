@@ -2,14 +2,12 @@ const { default: axios } = require("axios");
 const { config } = require("dotenv");
 const { type } = require("express/lib/response");
 
-const sendWhatsappSMS = async ({
-  content,
-  name,
-  location,
-  phone,
-  imageUrl,
-}) => {
+const sendWhatsappSMS = async ({ name, phone }) => {
   try {
+    const safeName =
+      typeof name === "string" && name.trim().length > 0
+        ? name.trim()
+        : "mteja";
     const payload = {
       messaging_product: "whatsapp",
       recipient_type: "individual",
@@ -26,7 +24,7 @@ const sendWhatsappSMS = async ({
             parameters: [
               {
                 type: "text",
-                text: name,
+                text: safeName,
               },
             ],
           },
