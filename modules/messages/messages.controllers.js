@@ -4,7 +4,7 @@ const { sendWhatsappSMS } = require("../../utils/send_whatsapp_sms");
 const addPrefixToPhoneNumber = require("../../utils/add_number_prefix");
 const createMessage = async (req, res) => {
   try {
-    const { content, contacts } = req.body;
+    const { content, contacts, imageUrl } = req.body;
 
     //create object array from contacts
     const contactObjects = contacts.map((contact) => ({
@@ -25,8 +25,9 @@ const createMessage = async (req, res) => {
           name: contact.name,
           location: contact.location,
           phone: contact.phone,
+          imageUrl: imageUrl, // Pass the imageUrl to the function
         });
-      })
+      }),
     );
     return res.status(201).json({
       message: "Message created successfully",
