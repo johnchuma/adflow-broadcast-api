@@ -10,7 +10,7 @@ const sendWhatsappSMS = async ({ content, name, location, phone }) => {
       to: phone,
       type: "template",
       template: {
-        name: "green",
+        name: "mualiko_wa_semina",
         language: {
           code: "sw",
         },
@@ -21,14 +21,6 @@ const sendWhatsappSMS = async ({ content, name, location, phone }) => {
               {
                 type: "text",
                 text: name,
-              },
-              {
-                type: "text",
-                text: location,
-              },
-              {
-                type: "text",
-                text: content,
               },
             ],
           },
@@ -42,7 +34,7 @@ const sendWhatsappSMS = async ({ content, name, location, phone }) => {
         headers: {
           Authorization: `Bearer ${process.env.WHATSAPP_ACCESS_TOKEN}`,
         },
-      }
+      },
     );
     console.log("WhatsApp message sent successfully:", response.data);
     return response.data;
