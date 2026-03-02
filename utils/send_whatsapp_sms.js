@@ -16,7 +16,7 @@ const sendWhatsappSMS = async ({ name, phone }) => {
       type: "template",
       template: {
         // Must match the exact template name in WhatsApp Business Manager
-        name: "seminar_invitation",
+        name: "creator_seminar",
         language: {
           code: "en",
         },
