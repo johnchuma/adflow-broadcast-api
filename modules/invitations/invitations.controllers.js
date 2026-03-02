@@ -15,8 +15,16 @@ async function getInvitations(req, res) {
       offset,
       order: [["createdAt", "DESC"]],
       include: [
-        { model: Contact, as: "contact", attributes: ["id", "name", "phone", "location"] },
-        { model: Message, as: "message", attributes: ["id", "content", "createdAt"] },
+        {
+          model: Contact,
+          as: "contact",
+          attributes: ["id", "name", "phone", "location"],
+        },
+        {
+          model: Message,
+          as: "message",
+          attributes: ["id", "content", "createdAt"],
+        },
       ],
     });
 
@@ -56,7 +64,9 @@ async function getInvitationStats(req, res) {
       Invitation.count(),
       Invitation.count({ where: { checkedIn: true } }),
     ]);
-    return res.json({ stats: { total, checkedIn, notCheckedIn: total - checkedIn } });
+    return res.json({
+      stats: { total, checkedIn, notCheckedIn: total - checkedIn },
+    });
   } catch (err) {
     console.error("getInvitationStats error:", err);
     return res.status(500).json({ message: "Failed to fetch stats" });

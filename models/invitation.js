@@ -64,7 +64,7 @@ module.exports = (sequelize) => {
     {
       sequelize,
       modelName: "Invitation",
-    }
+    },
   );
 
   return Invitation;

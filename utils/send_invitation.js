@@ -40,14 +40,14 @@ const sendInvitation = async (phone, qrCodeFile) => {
         headers: {
           Authorization: `Bearer ${process.env.WHATSAPP_ACCESS_TOKEN}`,
         },
-      }
+      },
     );
     console.log(`Invitation sent to ${phone}:`, response.data);
     return response.data;
   } catch (err) {
     console.error(
       `Error sending invitation to ${phone}:`,
-      err.response?.data || err.message
+      err.response?.data || err.message,
     );
     return null;
   }

@@ -1,5 +1,9 @@
 const { Router } = require("express");
-const { getInvitations, checkIn, getInvitationStats } = require("./invitations.controllers");
+const {
+  getInvitations,
+  checkIn,
+  getInvitationStats,
+} = require("./invitations.controllers");
 const { getPagination } = require("../../utils/getPagination");
 
 const router = Router();
