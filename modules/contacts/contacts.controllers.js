@@ -102,13 +102,15 @@ const editContact = async (req, res) => {
 const deleteContact = async (req, res) => {
   try {
     const { id } = req.params;
+    console.log(id);
     let contact = await Contact.findByPk(id);
-    await contact.delete();
+    await contact.destroy();
 
     return res.status(200).json({
       message: "Contact deleted successfully",
     });
   } catch (error) {
+    console.log(error);
     return res.status(500).json({
       message: "An error occurred while updating the contact",
       error: error.message,

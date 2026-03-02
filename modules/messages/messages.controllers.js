@@ -4,7 +4,7 @@ const { sendWhatsappSMS } = require("../../utils/send_whatsapp_sms");
 const addPrefixToPhoneNumber = require("../../utils/add_number_prefix");
 const createMessage = async (req, res) => {
   try {
-    const { content, contacts, } = req.body;
+    const { content, contacts } = req.body;
 
     //create object array from contacts
     const contactObjects = contacts.map((contact) => ({
@@ -40,15 +40,20 @@ const createMessage = async (req, res) => {
 
 const getMessages = async (req, res) => {
   try {
-    const messages = await Message.findAndCountAll({
-      limit: req.limit, // Limit the number of results
-      offset: req.offset, // Offset for pagination
-    });
+    const [messages, totalRecipientsCount] = await Promise.all([
+      Message.findAndCountAll({
+        order: [["createdAt", "DESC"]],
+        limit: req.limit,
+        offset: req.offset,
+      }),
+      Message.sum("recipientsCount"),
+    ]);
 
     return res.status(200).json({
       message: "Messages retrieved successfully",
       messages: messages.rows,
       total: messages.count,
+      totalRecipientsCount: totalRecipientsCount || 0,
       page: req.page,
       limit: req.limit,
     });

@@ -2,7 +2,7 @@ module.exports.getPagination = (req, res, next) => {
   try {
     let { page, limit, keyword } = req.query;
     page = parseInt(page || 1);
-    limit = parseInt(limit || 8);
+    limit = parseInt(limit || 6);
     const offset = (page - 1) * limit;
     req.page = page;
     req.limit = limit;
