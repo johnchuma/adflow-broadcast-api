@@ -29,9 +29,7 @@ const sendWhatsappSMS = async ({ name, phone }) => {
                 type: "image",
                 image: {
                   // Use env var so you can change without code deploy
-                  link:
-                    process.env.WHATSAPP_HEADER_IMAGE_URL ||
-                    "https://via.placeholder.com/600x400/0066cc/ffffff?text=AdFlow+Invite",
+                  link: "https://media.istockphoto.com/id/1141711907/photo/african-elephants-in-the-plains-of-serengeti-tanzania.jpg?s=612x612&w=0&k=20&c=C3cgoq_7_zWACObnwkrRGmIgh5Fk-tyh6P-4CLx_onM=",
                 },
               },
             ],
