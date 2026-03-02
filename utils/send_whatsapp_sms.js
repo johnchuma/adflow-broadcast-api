@@ -18,7 +18,7 @@ const sendWhatsappSMS = async ({ name, phone }) => {
         // Must match the exact template name in WhatsApp Business Manager
         name: "seminar_invitation",
         language: {
-          code: "en",
+          code: "sw",
         },
         components: [
           // Header image component – required because the template has an image header
