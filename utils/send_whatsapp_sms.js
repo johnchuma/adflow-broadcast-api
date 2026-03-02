@@ -4,17 +4,13 @@ const { type } = require("express/lib/response");
 
 const sendWhatsappSMS = async ({ name, phone }) => {
   try {
-    const safeName =
-      typeof name === "string" && name.trim().length > 0
-        ? name.trim()
-        : "mteja";
     const payload = {
       messaging_product: "whatsapp",
       recipient_type: "individual",
       to: phone,
       type: "template",
       template: {
-        name: "mualiko_wa_semina",
+        name: "siminar_invitation",
         language: {
           code: "sw",
         },
@@ -24,7 +20,7 @@ const sendWhatsappSMS = async ({ name, phone }) => {
             parameters: [
               {
                 type: "text",
-                text: safeName,
+                text: name,
               },
             ],
           },
