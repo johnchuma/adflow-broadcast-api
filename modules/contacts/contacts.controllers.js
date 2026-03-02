@@ -6,7 +6,7 @@ const createContact = async (req, res) => {
     const { name, phone, location } = req.body;
     const contact = await Contact.create({
       name,
-      phone,
+      phone: addPrefixToPhoneNumber(phone),
       location,
     });
     return res.status(201).json({
