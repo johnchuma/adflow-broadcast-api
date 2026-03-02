@@ -1,30 +1,31 @@
 "use strict";
-const { Model } = require("sequelize");
 
-module.exports = (sequelize, DataTypes) => {
-  class Feedback extends Model {
+const { Model, DataTypes } = require("sequelize");
+
+module.exports = (sequelize) => {
+  class Invitation extends Model {
     static associate(models) {
-      Feedback.belongsTo(models.Contact, {
+      Invitation.belongsTo(models.Contact, {
         foreignKey: "contactId",
         as: "contact",
       });
-      Feedback.belongsTo(models.Message, {
+      Invitation.belongsTo(models.Message, {
         foreignKey: "messageId",
         as: "message",
       });
-      Feedback.hasOne(models.Invitation, {
+      Invitation.belongsTo(models.Feedback, {
         foreignKey: "feedbackId",
-        as: "invitation",
+        as: "feedback",
       });
     }
   }
 
-  Feedback.init(
+  Invitation.init(
     {
       id: {
-        primaryKey: true,
         type: DataTypes.UUID,
         defaultValue: DataTypes.UUIDV4,
+        primaryKey: true,
       },
       contactId: {
         type: DataTypes.UUID,
@@ -34,10 +35,9 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.UUID,
         allowNull: true,
       },
-      whatsappMessageId: {
-        type: DataTypes.STRING,
+      feedbackId: {
+        type: DataTypes.UUID,
         allowNull: true,
-        unique: true,
       },
       phone: {
         type: DataTypes.STRING,
@@ -47,25 +47,25 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.STRING,
         allowNull: true,
       },
-      text: {
+      qrCodeFile: {
         type: DataTypes.STRING,
-        allowNull: false,
+        allowNull: true,
       },
-      sentiment: {
-        type: DataTypes.ENUM("positive", "negative", "neutral"),
+      checkedIn: {
+        type: DataTypes.BOOLEAN,
         allowNull: false,
-        defaultValue: "neutral",
+        defaultValue: false,
       },
-      respondedAt: {
+      checkedInAt: {
         type: DataTypes.DATE,
         allowNull: true,
       },
     },
     {
       sequelize,
-      modelName: "Feedback",
-    },
+      modelName: "Invitation",
+    }
   );
 
-  return Feedback;
+  return Invitation;
 };

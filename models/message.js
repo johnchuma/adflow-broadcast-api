@@ -12,6 +12,10 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: "messageId",
         as: "feedbacks",
       });
+      Message.hasMany(models.Invitation, {
+        foreignKey: "messageId",
+        as: "invitations",
+      });
     }
   }
   Message.init(

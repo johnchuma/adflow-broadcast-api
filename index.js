@@ -1,18 +1,26 @@
 const express = require("express");
+const path = require("path");
+const QRCode = require("qrcode");
 const app = express();
 const cors = require("cors");
 app.use(cors());
 app.use(express.json());
 
+// Serve generated QR code images
+app.use("/files", express.static(path.join(__dirname, "files")));
+
 const contactsRoutes = require("./modules/contacts/contacts.routes");
 const usersRoutes = require("./modules/users/users.routes");
 const messagesRoutes = require("./modules/messages/messages.routes");
 const feedbacksRoutes = require("./modules/feedbacks/feedbacks.routes");
+const invitationsRoutes = require("./modules/invitations/invitations.routes");
+const { sendInvitation } = require("./utils/send_invitation");
 
 app.use("/contacts", contactsRoutes);
 app.use("/users", usersRoutes);
 app.use("/messages", messagesRoutes);
 app.use("/feedbacks", feedbacksRoutes);
+app.use("/invitations", invitationsRoutes);
 
 // ─── Sentiment helper ──────────────────────────────────────────────────────
 const POSITIVE_KEYWORDS = [
@@ -120,23 +128,116 @@ app.post("/webhook", async (req, res) => {
             order: [["createdAt", "DESC"]],
           });
 
-          // Upsert: skip if we already processed this WhatsApp message id
-          await Feedback.findOrCreate({
-            where: { whatsappMessageId: wamid },
-            defaults: {
+          // Upsert: one record per (phone + broadcast message).
+          // If the same contact replies again to the same broadcast, update
+          // the existing record with the latest reply instead of creating a new one.
+          const lookupWhere = latestMessage?.id
+            ? { phone: normalizedPhone, messageId: latestMessage.id }
+            : { whatsappMessageId: wamid };
+
+          const existing = await Feedback.findOne({ where: lookupWhere });
+
+          const { Invitation } = require("./models");
+
+          if (existing) {
+            await existing.update({
+              text: replyText,
+              sentiment,
+              whatsappMessageId: wamid,
+              contactId: contact?.id || existing.contactId,
+              contactName: contact?.name || contactName || existing.contactName,
+              respondedAt: timestamp,
+            });
+            console.log(
+              `Feedback updated: ${replyText} (${sentiment}) from ${fromPhone}`,
+            );
+
+            // ── Send invitation if reply just turned positive and no invitation sent yet ──
+            if (sentiment === "positive") {
+              const alreadyInvited = await Invitation.findOne({
+                where: { feedbackId: existing.id },
+              });
+              if (!alreadyInvited) {
+                try {
+                  const qrCodeFile = `${normalizedPhone}-${Date.now()}.png`;
+                  const qrCodePath = path.join(__dirname, "files", qrCodeFile);
+                  await QRCode.toFile(qrCodePath, normalizedPhone, {
+                    width: 400,
+                    margin: 2,
+                  });
+                  await sendInvitation(normalizedPhone, qrCodeFile);
+                  await Invitation.create({
+                    contactId: contact?.id || existing.contactId,
+                    messageId: latestMessage?.id || null,
+                    feedbackId: existing.id,
+                    phone: normalizedPhone,
+                    contactName:
+                      contact?.name || contactName || existing.contactName,
+                    qrCodeFile,
+                    checkedIn: false,
+                  });
+                  console.log(
+                    `Invitation sent for updated positive feedback from ${fromPhone}`,
+                  );
+                } catch (invErr) {
+                  console.error(
+                    `Error sending invitation to ${fromPhone}:`,
+                    invErr,
+                  );
+                }
+              }
+            }
+          } else {
+            const feedback = await Feedback.create({
               contactId: contact?.id || null,
               messageId: latestMessage?.id || null,
               phone: normalizedPhone,
               contactName: contact?.name || contactName,
               text: replyText,
               sentiment,
+              whatsappMessageId: wamid,
               respondedAt: timestamp,
-            },
-          });
+            });
+            console.log(
+              `Feedback saved: ${replyText} (${sentiment}) from ${fromPhone}`,
+            );
 
-          console.log(
-            `Feedback saved: ${replyText} (${sentiment}) from ${fromPhone}`,
-          );
+            // ── Send invitation QR code for positive replies ──────────────
+            if (sentiment === "positive") {
+              try {
+                // Generate a unique QR code encoding the contact's phone
+                const qrCodeFile = `${normalizedPhone}-${Date.now()}.png`;
+                const qrCodePath = path.join(__dirname, "files", qrCodeFile);
+                await QRCode.toFile(qrCodePath, normalizedPhone, {
+                  width: 400,
+                  margin: 2,
+                });
+
+                // Send the invitation WhatsApp template with the QR image
+                await sendInvitation(normalizedPhone, qrCodeFile);
+
+                // Record the invitation
+                await Invitation.create({
+                  contactId: contact?.id || null,
+                  messageId: latestMessage?.id || null,
+                  feedbackId: feedback.id,
+                  phone: normalizedPhone,
+                  contactName: contact?.name || contactName,
+                  qrCodeFile,
+                  checkedIn: false,
+                });
+
+                console.log(
+                  `Invitation sent and recorded for ${fromPhone} (QR: ${qrCodeFile})`,
+                );
+              } catch (invErr) {
+                console.error(
+                  `Error sending invitation to ${fromPhone}:`,
+                  invErr,
+                );
+              }
+            }
+          }
         }
       }
     }
