@@ -8,7 +8,10 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      // define association here
+      Contact.hasMany(models.Feedback, {
+        foreignKey: "contactId",
+        as: "feedbacks",
+      });
     }
   }
   Contact.init(
@@ -35,7 +38,7 @@ module.exports = (sequelize, DataTypes) => {
     {
       sequelize,
       modelName: "Contact",
-    }
+    },
   );
   return Contact;
 };
