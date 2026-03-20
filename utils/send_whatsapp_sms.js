@@ -5,9 +5,7 @@ const { type } = require("express/lib/response");
 const sendWhatsappSMS = async ({ name, phone }) => {
   try {
     const safeName =
-      typeof name === "string" && name.trim().length > 0
-        ? name.trim()
-        : "mteja";
+      typeof name === "string" && name.trim().length > 0 ? name.trim() : "";
 
     const payload = {
       messaging_product: "whatsapp",
