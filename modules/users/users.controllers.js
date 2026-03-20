@@ -53,7 +53,8 @@ const loginUser = async (req, res) => {
 
     if (!user.isActive) {
       return res.status(403).json({
-        message: "Your account has been deactivated. Please contact an administrator.",
+        message:
+          "Your account has been deactivated. Please contact an administrator.",
       });
     }
 
@@ -64,18 +65,20 @@ const loginUser = async (req, res) => {
       });
     }
     const token = generateJwtTokens(user); // Assuming you have a method to generate a token
-    
+
     // Prepare user data without password
     const userData = {
       id: user.id,
       email: user.email,
       name: user.name,
-      role: user.role ? {
-        id: user.role.id,
-        name: user.role.name,
-        description: user.role.description,
-      } : null,
-      permissions: user.role?.permissions?.map(p => p.name) || [],
+      role: user.role
+        ? {
+            id: user.role.id,
+            name: user.role.name,
+            description: user.role.description,
+          }
+        : null,
+      permissions: user.role?.permissions?.map((p) => p.name) || [],
     };
 
     return res.status(200).json({

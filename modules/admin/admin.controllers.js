@@ -241,7 +241,10 @@ const getRoles = async (req, res) => {
 const getPermissions = async (req, res) => {
   try {
     const permissions = await Permission.findAll({
-      order: [["resource", "ASC"], ["action", "ASC"]],
+      order: [
+        ["resource", "ASC"],
+        ["action", "ASC"],
+      ],
     });
 
     return res.status(200).json({

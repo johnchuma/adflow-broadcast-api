@@ -39,10 +39,14 @@ module.exports = {
     });
 
     // Add unique constraint to prevent duplicate role-permission pairs
-    await queryInterface.addIndex("RolePermissions", ["roleId", "permissionId"], {
-      unique: true,
-      name: "unique_role_permission",
-    });
+    await queryInterface.addIndex(
+      "RolePermissions",
+      ["roleId", "permissionId"],
+      {
+        unique: true,
+        name: "unique_role_permission",
+      },
+    );
   },
   async down(queryInterface, DataTypes) {
     await queryInterface.dropTable("RolePermissions");

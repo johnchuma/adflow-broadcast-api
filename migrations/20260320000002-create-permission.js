@@ -20,7 +20,8 @@ module.exports = {
       resource: {
         type: DataTypes.STRING,
         allowNull: false,
-        comment: "Resource this permission applies to (e.g., contacts, messages, users)",
+        comment:
+          "Resource this permission applies to (e.g., contacts, messages, users)",
       },
       action: {
         type: DataTypes.STRING,

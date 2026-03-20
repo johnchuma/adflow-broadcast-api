@@ -54,7 +54,7 @@ const checkPermission = (requiredPermission) => {
 
       // Check if user has the required permission
       const hasPermission = user.role.permissions.some(
-        (permission) => permission.name === requiredPermission
+        (permission) => permission.name === requiredPermission,
       );
 
       if (!hasPermission) {
