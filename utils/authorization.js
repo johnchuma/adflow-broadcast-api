@@ -93,11 +93,14 @@ const requireRole = (...allowedRoles) => {
   return async (req, res, next) => {
     try {
       if (!req.user || !req.user.id) {
+        console.error("Authorization error: No user in request");
         return res.status(401).json({
           status: false,
           message: "Unauthorized - User not authenticated",
         });
       }
+
+      console.log("Checking role for user ID:", req.user.id);
 
       const user = await User.findByPk(req.user.id, {
         include: [
@@ -109,6 +112,7 @@ const requireRole = (...allowedRoles) => {
       });
 
       if (!user) {
+        console.error("User not found in database:", req.user.id);
         return res.status(401).json({
           status: false,
           message: "User not found",
@@ -116,6 +120,7 @@ const requireRole = (...allowedRoles) => {
       }
 
       if (!user.isActive) {
+        console.error("User account is deactivated:", user.email);
         return res.status(403).json({
           status: false,
           message: "Your account has been deactivated",
@@ -123,13 +128,21 @@ const requireRole = (...allowedRoles) => {
       }
 
       if (!user.role) {
+        console.error("No role assigned to user:", user.email);
         return res.status(403).json({
           status: false,
           message: "No role assigned to user",
         });
       }
 
+      console.log(
+        `User ${user.email} has role: ${user.role.name}, required: ${allowedRoles.join(", ")}`,
+      );
+
       if (!allowedRoles.includes(user.role.name)) {
+        console.error(
+          `Access denied - user has role ${user.role.name}, requires: ${allowedRoles.join(", ")}`,
+        );
         return res.status(403).json({
           status: false,
           message: `Access denied - requires one of: ${allowedRoles.join(", ")}`,
@@ -143,6 +156,7 @@ const requireRole = (...allowedRoles) => {
         role: user.role.name,
       };
 
+      console.log("Authorization successful for:", user.email);
       next();
     } catch (error) {
       console.error("Role check error:", error);
