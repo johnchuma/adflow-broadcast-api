@@ -105,6 +105,20 @@ app.post("/webhook", async (req, res) => {
 
           if (!replyText) continue;
 
+          // ─── Filter: Only accept specific feedback responses ──────────────
+          const validResponses = [
+            "Asante, Nitahudhuria",
+            "Samahani, Sitahudhuria",
+          ];
+          const normalizedReply = replyText.trim();
+
+          if (!validResponses.includes(normalizedReply)) {
+            console.log(
+              `Filtered out invalid feedback response: "${replyText}" from ${msg.from}`,
+            );
+            continue; // Skip this message, don't record to database
+          }
+
           const fromPhone = msg.from; // e.g. "255627707434"
           const wamid = msg.id;
           const timestamp = msg.timestamp
