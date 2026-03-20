@@ -14,6 +14,7 @@ const usersRoutes = require("./modules/users/users.routes");
 const messagesRoutes = require("./modules/messages/messages.routes");
 const feedbacksRoutes = require("./modules/feedbacks/feedbacks.routes");
 const invitationsRoutes = require("./modules/invitations/invitations.routes");
+const adminRoutes = require("./modules/admin/admin.routes");
 const { sendInvitation } = require("./utils/send_invitation");
 
 app.use("/contacts", contactsRoutes);
@@ -21,6 +22,7 @@ app.use("/users", usersRoutes);
 app.use("/messages", messagesRoutes);
 app.use("/feedbacks", feedbacksRoutes);
 app.use("/invitations", invitationsRoutes);
+app.use("/admin", adminRoutes);
 
 // ─── Sentiment helper ──────────────────────────────────────────────────────
 const POSITIVE_KEYWORDS = [

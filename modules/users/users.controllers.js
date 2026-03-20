@@ -1,5 +1,5 @@
 const { Op } = require("sequelize");
-const { User } = require("../../models");
+const { User, Role, Permission } = require("../../models");
 const { generateJwtTokens } = require("../../utils/generateJwtTokens");
 const bcrypt = require("bcrypt");
 const createUser = async (req, res) => {
@@ -31,12 +31,32 @@ const loginUser = async (req, res) => {
     const { email, password } = req.body;
     const user = await User.findOne({
       where: { email },
+      include: [
+        {
+          model: Role,
+          as: "role",
+          include: [
+            {
+              model: Permission,
+              as: "permissions",
+              through: { attributes: [] },
+            },
+          ],
+        },
+      ],
     });
     if (!user) {
       return res.status(404).json({
         message: "User not found",
       });
     }
+
+    if (!user.isActive) {
+      return res.status(403).json({
+        message: "Your account has been deactivated. Please contact an administrator.",
+      });
+    }
+
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid) {
       return res.status(401).json({
@@ -44,10 +64,24 @@ const loginUser = async (req, res) => {
       });
     }
     const token = generateJwtTokens(user); // Assuming you have a method to generate a token
-    // Generate a token or session here if needed
+    
+    // Prepare user data without password
+    const userData = {
+      id: user.id,
+      email: user.email,
+      name: user.name,
+      role: user.role ? {
+        id: user.role.id,
+        name: user.role.name,
+        description: user.role.description,
+      } : null,
+      permissions: user.role?.permissions?.map(p => p.name) || [],
+    };
+
     return res.status(200).json({
       message: "Login successful",
       token: token.ACCESS_TOKEN,
+      user: userData,
     });
   } catch (error) {
     console.error("Login error:", error);

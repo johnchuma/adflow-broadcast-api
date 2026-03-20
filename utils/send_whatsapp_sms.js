@@ -29,7 +29,7 @@ const sendWhatsappSMS = async ({ name, phone }) => {
                 type: "image",
                 image: {
                   // Use env var so you can change without code deploy
-                  link: "https://performanceapi.adflow.africa/uploads/ministry.png",
+                  link: "https://performanceapi.adflow.africa/uploads/creators.jpeg",
                 },
               },
             ],
