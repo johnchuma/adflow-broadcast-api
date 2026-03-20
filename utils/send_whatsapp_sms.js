@@ -14,7 +14,7 @@ const sendWhatsappSMS = async ({ name, phone }) => {
       type: "template",
       template: {
         // Must match the exact template name in WhatsApp Business Manager
-        name: "creator_seminar",
+        name: "creator_invitation",
         language: {
           code: "sw",
         },
@@ -33,15 +33,7 @@ const sendWhatsappSMS = async ({ name, phone }) => {
             ],
           },
           // Body with one text variable {{1}}
-          {
-            type: "body",
-            parameters: [
-              {
-                type: "text",
-                text: safeName,
-              },
-            ],
-          },
+
           // Your quick-reply buttons are static, so no button component is needed
         ],
       },
